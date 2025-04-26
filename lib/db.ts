@@ -1,4 +1,4 @@
-import mysql from 'mysql2/promise';
+import mysql, { ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 
 const pool = mysql.createPool({
   host: '34.47.226.13',
@@ -10,13 +10,21 @@ const pool = mysql.createPool({
   queueLimit: 0
 });
 
-export async function executeQuery({ query, values }: { query: string; values: any[] }) {
+type QueryResult = ResultSetHeader | RowDataPacket[] | RowDataPacket[][];
+
+export async function executeQuery<T extends QueryResult>({ 
+  query, 
+  values 
+}: { 
+  query: string; 
+  values: any[] 
+}): Promise<{ data?: T; error?: Error }> {
   const connection = await pool.getConnection();
   try {
     const [results] = await connection.execute(query, values);
-    return results;
+    return { data: results as T };
   } catch (error) {
-    return { error };
+    return { error: error as Error };
   } finally {
     connection.release();
   }
