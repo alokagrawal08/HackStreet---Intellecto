@@ -50,7 +50,7 @@ interface Answer {
 }
 
 const TOTAL_TIME = 15 * 60; // 15 minutes in seconds
-const MAX_QUESTIONS = 15;
+const MAX_QUESTIONS = 5;
 const PASSING_PERCENTAGE = 75;
 
 const Quiz: React.FC = () => {
@@ -173,6 +173,10 @@ const Quiz: React.FC = () => {
     setShowResult(true);
   };
 
+  const handleProceed = () => {
+    window.location.href = 'https://ai-interview-platform-2whg2og9v-lalit-shrotriyas-projects.vercel.app/';
+  };
+
   const renderReviewSection = () => {
     return (
       <Box bg={bgColor} p={8} borderRadius="xl" boxShadow="2xl" maxW="900px" mx="auto">
@@ -263,10 +267,10 @@ const Quiz: React.FC = () => {
             <Button
               colorScheme="green"
               size="lg"
-              onClick={() => router.push('/next-page')}
+              onClick={handleProceed}
               w="full"
             >
-              Proceed to Next Page
+              Proceed to AI Interview Platform
             </Button>
           )}
         </VStack>
