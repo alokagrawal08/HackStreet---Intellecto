@@ -168,7 +168,62 @@ const Quiz: React.FC = () => {
     return (correctAnswers / questions.length) * 100;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    const score = calculateScore();
+    const passed = score >= PASSING_PERCENTAGE;
+    
+    // Format quiz data for database
+    const quizData = {
+      questions: questions.map(q => ({
+        questionId: q.id,
+        question: q.question,
+        selectedOption: answers.find(a => a.questionId === q.id)?.selectedOption || null,
+        isCorrect: answers.find(a => a.questionId === q.id)?.isCorrect || false
+      })),
+      score: score.toFixed(1),
+      status: passed ? 'PASSED' : 'FAILED',
+      timestamp: new Date().toISOString()
+    };
+
+    try {
+      // Get user info from localStorage or your auth system
+      const userName = localStorage.getItem('userName') || 'Anonymous';
+      const userId = localStorage.getItem('userId') || 'default-user';
+
+      const response = await fetch('/api/submit-quiz', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userName: userName,
+          userId: userId,
+          jsonData: quizData
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to submit quiz data');
+      }
+
+      toast({
+        title: 'Quiz Submitted',
+        description: 'Your quiz results have been saved successfully',
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
+    } catch (error) {
+      console.error('Error submitting quiz:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to save quiz results',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+
     setShowReview(false);
     setShowResult(true);
   };
