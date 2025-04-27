@@ -543,15 +543,19 @@ const Quiz: React.FC = () => {
         }}
       >
         <VStack spacing={8} align="stretch">
-          <Heading 
-            size="xl" 
-            textAlign="center" 
-            bgGradient={gradientBg}
-            bgClip="text"
-            letterSpacing="tight"
-          >
-            Review Your Answers
-          </Heading>
+          <VStack spacing={2} align="center">
+            <Heading 
+              size="xl" 
+              bgGradient={gradientBg}
+              bgClip="text"
+              letterSpacing="tight"
+            >
+              Review Your Answers
+            </Heading>
+            <Text color="gray.500" fontSize="lg">
+              Intellecto Assessment Review
+            </Text>
+          </VStack>
           
           <Box overflowX="auto">
             <Table variant="simple">
@@ -653,14 +657,19 @@ const Quiz: React.FC = () => {
         }}
       >
         <VStack spacing={8}>
-          <Heading 
-            size="xl" 
-            bgGradient={gradientBg}
-            bgClip="text"
-            letterSpacing="tight"
-          >
-            {isDisqualified ? 'Disqualified' : 'Quiz Results'}
-          </Heading>
+          <VStack spacing={2}>
+            <Heading 
+              size="xl" 
+              bgGradient={gradientBg}
+              bgClip="text"
+              letterSpacing="tight"
+            >
+              {isDisqualified ? 'Assessment Terminated' : 'Assessment Results'}
+            </Heading>
+            <Text color="gray.500" fontSize="lg">
+              Intellecto Online Assessment
+            </Text>
+          </VStack>
           
           <Box 
             textAlign="center" 
@@ -772,19 +781,30 @@ const Quiz: React.FC = () => {
             wrap="wrap"
             gap={4}
           >
-            <Badge
-              size="lg"
-              px={4}
-              py={2}
-              borderRadius="full"
-              colorScheme="purple"
-              fontSize="md"
-              fontWeight="bold"
-              bgGradient={gradientBg}
-              color="white"
-            >
-              Role: {role || "FullStack (Web)"}
-            </Badge>
+            <VStack align="start" spacing={1}>
+              <Heading
+                size="md"
+                bgGradient={gradientBg}
+                bgClip="text"
+                letterSpacing="tight"
+                fontWeight="bold"
+              >
+                Intellecto
+              </Heading>
+              <Badge
+                size="lg"
+                px={4}
+                py={2}
+                borderRadius="full"
+                colorScheme="purple"
+                fontSize="md"
+                fontWeight="bold"
+                bgGradient={gradientBg}
+                color="white"
+              >
+                {role || "FullStack (Web)"} Assessment
+              </Badge>
+            </VStack>
             <HStack spacing={4}>
               <Tooltip label="Time remaining" placement="bottom">
                 <Badge
@@ -983,8 +1003,18 @@ const Quiz: React.FC = () => {
     return (
       <Container centerContent py={20}>
         <VStack spacing={6}>
+          <Heading
+            size="xl"
+            bgGradient="linear(to-r, blue.400, purple.500)"
+            bgClip="text"
+            letterSpacing="tight"
+          >
+            Intellecto
+          </Heading>
+          <Text fontSize="lg" color="gray.500">
+            Preparing your assessment...
+          </Text>
           <Progress size="xs" w="200px" isIndeterminate colorScheme="purple" />
-          <Text fontSize="lg">Loading questions...</Text>
         </VStack>
       </Container>
     );
