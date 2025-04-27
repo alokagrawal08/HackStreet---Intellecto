@@ -80,6 +80,7 @@ const pulse = keyframes`
 const Quiz: React.FC = () => {
   const router = useRouter();
   const { role } = router.query;
+  const { setColorMode } = useColorMode();
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Answer[]>([]);
@@ -101,6 +102,11 @@ const Quiz: React.FC = () => {
   const [isDisqualificationSaved, setIsDisqualificationSaved] = useState(false);
   const [showWarningBanner, setShowWarningBanner] = useState(false);
   const [warningTimeout, setWarningTimeout] = useState<NodeJS.Timeout | null>(null);
+
+  // Set dark mode as default when component mounts
+  useEffect(() => {
+    setColorMode('dark');
+  }, []);
 
   // Timer functionality
   useEffect(() => {
