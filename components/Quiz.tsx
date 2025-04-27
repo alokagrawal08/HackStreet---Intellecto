@@ -31,10 +31,13 @@ import {
   ModalBody,
   ModalFooter,
   Icon,
+  ScaleFade,
+  Tooltip,
 } from '@chakra-ui/react';
+import { keyframes } from '@emotion/react';
 import { useRouter } from 'next/router';
 import { ThemeToggle } from './ThemeToggle';
-import { WarningIcon } from '@chakra-ui/icons';
+import { WarningIcon, CheckCircleIcon, TimeIcon, QuestionIcon } from '@chakra-ui/icons';
 
 interface Question {
   id: number;
@@ -67,6 +70,12 @@ const TOTAL_TIME = 2 * 60; // 2 minutes in seconds
 const MAX_QUESTIONS = 5;
 const PASSING_PERCENTAGE = 0;
 const MAX_WARNINGS = 3;
+
+const pulse = keyframes`
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+`;
 
 const Quiz: React.FC = () => {
   const router = useRouter();
@@ -502,51 +511,105 @@ const Quiz: React.FC = () => {
   );
 
   const renderReviewSection = () => {
+    const gradientBg = useColorModeValue(
+      'linear(to-r, blue.400, purple.500)',
+      'linear(to-r, blue.600, purple.700)'
+    );
+
     return (
-      <Box bg={bgColor} p={8} borderRadius="xl" boxShadow="2xl" maxW="900px" mx="auto">
-        <VStack spacing={6} align="stretch">
-          <Heading size="lg" textAlign="center" mb={4}>
+      <Box 
+        bg={useColorModeValue('white', 'gray.800')} 
+        p={8} 
+        borderRadius="2xl" 
+        boxShadow="2xl" 
+        maxW="900px" 
+        mx="auto"
+        position="relative"
+        overflow="hidden"
+        _before={{
+          content: '""',
+          position: 'absolute',
+          top: '-2px',
+          left: '-2px',
+          right: '-2px',
+          height: '4px',
+          bgGradient: gradientBg,
+        }}
+      >
+        <VStack spacing={8} align="stretch">
+          <Heading 
+            size="xl" 
+            textAlign="center" 
+            bgGradient={gradientBg}
+            bgClip="text"
+            letterSpacing="tight"
+          >
             Review Your Answers
           </Heading>
           
-          <Table variant="simple">
-            <Thead>
-              <Tr>
-                <Th>Q#</Th>
-                <Th>Question</Th>
-                <Th>Your Answer</Th>
-                <Th>Status</Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {questions.map((question, index) => {
-                const answer = answers.find(a => a.questionId === question.id);
-                return (
-                  <Tr key={question.id}>
-                    <Td>{index + 1}</Td>
-                    <Td>{question.question}</Td>
-                    <Td>
-                      {answer?.selectedOption || 
-                        <Badge colorScheme="red">Not answered</Badge>
-                      }
-                    </Td>
-                    <Td>
-                      {answer?.isCorrect ? 
-                        <Badge colorScheme="green">Correct</Badge> :
-                        <Badge colorScheme="red">Incorrect</Badge>
-                      }
-                    </Td>
-                  </Tr>
-                );
-              })}
-            </Tbody>
-          </Table>
+          <Box overflowX="auto">
+            <Table variant="simple">
+              <Thead>
+                <Tr>
+                  <Th>Q#</Th>
+                  <Th>Question</Th>
+                  <Th>Your Answer</Th>
+                  <Th>Status</Th>
+                </Tr>
+              </Thead>
+              <Tbody>
+                {questions.map((question, index) => {
+                  const answer = answers.find(a => a.questionId === question.id);
+                  return (
+                    <Tr 
+                      key={question.id}
+                      _hover={{
+                        bg: useColorModeValue('gray.50', 'gray.700'),
+                        transition: 'all 0.2s',
+                      }}
+                    >
+                      <Td fontWeight="bold">{index + 1}</Td>
+                      <Td maxW="400px" whiteSpace="normal">{question.question}</Td>
+                      <Td>
+                        {answer?.selectedOption || 
+                          <Badge colorScheme="red" p={2} borderRadius="md">
+                            Not answered
+                          </Badge>
+                        }
+                      </Td>
+                      <Td>
+                        <Badge 
+                          colorScheme={answer?.isCorrect ? 'green' : 'red'}
+                          p={2}
+                          borderRadius="md"
+                          display="flex"
+                          alignItems="center"
+                          gap={2}
+                        >
+                          {answer?.isCorrect ? 
+                            <><CheckCircleIcon /> Correct</> :
+                            <><WarningIcon /> Incorrect</>
+                          }
+                        </Badge>
+                      </Td>
+                    </Tr>
+                  );
+                })}
+              </Tbody>
+            </Table>
+          </Box>
 
           <Button
-            colorScheme="green"
+            colorScheme="purple"
             size="lg"
             onClick={handleSubmit}
-            mt={4}
+            mt={6}
+            bgGradient={gradientBg}
+            _hover={{
+              transform: 'translateY(-2px)',
+              boxShadow: 'xl',
+              transition: 'all 0.2s',
+            }}
           >
             Submit Quiz
           </Button>
@@ -558,52 +621,112 @@ const Quiz: React.FC = () => {
   const renderFinalResults = () => {
     const score = isDisqualified ? 0 : calculateScore();
     const passed = !isDisqualified && score >= PASSING_PERCENTAGE;
+    const gradientBg = useColorModeValue(
+      'linear(to-r, blue.400, purple.500)',
+      'linear(to-r, blue.600, purple.700)'
+    );
 
     return (
-      <Box bg={bgColor} p={8} borderRadius="xl" boxShadow="2xl" maxW="600px" mx="auto">
+      <Box 
+        bg={useColorModeValue('white', 'gray.800')} 
+        p={8} 
+        borderRadius="2xl" 
+        boxShadow="2xl" 
+        maxW="600px" 
+        mx="auto"
+        position="relative"
+        overflow="hidden"
+        _before={{
+          content: '""',
+          position: 'absolute',
+          top: '-2px',
+          left: '-2px',
+          right: '-2px',
+          height: '4px',
+          bgGradient: gradientBg,
+        }}
+      >
         <VStack spacing={8}>
-          <Heading size="xl" bgGradient="linear(to-r, blue.400, purple.500)" 
-                  bgClip="text">
+          <Heading 
+            size="xl" 
+            bgGradient={gradientBg}
+            bgClip="text"
+            letterSpacing="tight"
+          >
             {isDisqualified ? 'Disqualified' : 'Quiz Results'}
           </Heading>
           
-          <Box textAlign="center" p={6} borderRadius="lg" 
-               bg={useColorModeValue(
-                 isDisqualified ? 'red.50' : passed ? 'green.50' : 'red.50',
-                 isDisqualified ? 'red.900' : passed ? 'green.900' : 'red.900'
-               )} 
-               w="100%">
-            <Heading size="md" mb={4} color={isDisqualified ? 'red.500' : passed ? 'green.500' : 'red.500'}>
-              {isDisqualified 
-                ? 'You have been disqualified' 
-                : passed ? 'Congratulations! 🎉' : 'Keep Practicing! 💪'}
+          <Box 
+            textAlign="center" 
+            p={8} 
+            borderRadius="xl" 
+            bg={useColorModeValue(
+              isDisqualified ? 'red.50' : passed ? 'green.50' : 'red.50',
+              isDisqualified ? 'red.900' : passed ? 'green.900' : 'red.900'
+            )} 
+            w="100%"
+            boxShadow="inner"
+          >
+            <Heading 
+              size="lg" 
+              mb={6} 
+              color={isDisqualified ? 'red.500' : passed ? 'green.500' : 'red.500'}
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              gap={3}
+            >
+              {isDisqualified ? 
+                <><WarningIcon /> You have been disqualified</> : 
+                passed ? <><CheckCircleIcon /> Congratulations! 🎉</> : 
+                <><QuestionIcon /> Keep Practicing! 💪</>}
             </Heading>
             {!isDisqualified && (
-              <>
-                <Text fontSize="4xl" fontWeight="bold" color={passed ? 'green.600' : 'red.600'}>
+              <VStack spacing={4}>
+                <Text 
+                  fontSize="5xl" 
+                  fontWeight="bold" 
+                  color={passed ? 'green.600' : 'red.600'}
+                >
                   {answers.filter(a => a.isCorrect).length} / {questions.length}
                 </Text>
-                <Text fontSize="2xl" color={passed ? 'green.500' : 'red.500'}>
+                <Text 
+                  fontSize="3xl" 
+                  color={passed ? 'green.500' : 'red.500'}
+                  fontWeight="semibold"
+                >
                   {score.toFixed(1)}%
                 </Text>
-              </>
+              </VStack>
             )}
           </Box>
 
-          <Alert status={isDisqualified ? "error" : passed ? "success" : "info"} borderRadius="lg">
-            <AlertIcon />
-            {isDisqualified 
-              ? "You have been disqualified for violating quiz rules."
-              : passed ? "Great job! You've passed the quiz!" 
-              : "Don't worry! Practice makes perfect!"}
+          <Alert 
+            status={isDisqualified ? "error" : passed ? "success" : "info"} 
+            borderRadius="lg"
+            p={6}
+          >
+            <AlertIcon boxSize="6" />
+            <Text fontSize="lg" fontWeight="medium">
+              {isDisqualified 
+                ? "You have been disqualified for violating quiz rules."
+                : passed ? "Great job! You've passed the quiz!" 
+                : "Don't worry! Practice makes perfect!"}
+            </Text>
           </Alert>
 
           {passed && !isDisqualified && (
             <Button
-              colorScheme="green"
+              colorScheme="purple"
               size="lg"
               onClick={handleProceed}
               w="full"
+              bgGradient={gradientBg}
+              _hover={{
+                transform: 'translateY(-2px)',
+                boxShadow: 'xl',
+                transition: 'all 0.2s',
+              }}
             >
               Proceed to AI Interview Platform
             </Button>
@@ -616,97 +739,205 @@ const Quiz: React.FC = () => {
   const renderQuiz = () => {
     const currentQuestion = questions[currentQuestionIndex];
     const currentAnswer = answers.find(a => a.questionId === currentQuestion?.id);
+    const gradientBg = useColorModeValue(
+      'linear(to-r, blue.400, purple.500)',
+      'linear(to-r, blue.600, purple.700)'
+    );
 
     return (
-      <Box 
-        bg={bgColor} 
-        p={8} 
-        borderRadius="xl" 
-        boxShadow="2xl"
-        border="1px"
-        borderColor={borderColor}
-      >
-        <VStack spacing={6} align="stretch">
-          <Flex justify="space-between" align="center" wrap="wrap" gap={4}>
-            <Heading size="md" bgGradient="linear(to-r, blue.400, purple.500)" bgClip="text">
-              Question {currentQuestionIndex + 1} of {questions.length}
-            </Heading>
-            <Badge
-              colorScheme={timeLeft < 60 ? 'red' : 'green'}
-              p={2}
-              borderRadius="md"
-              fontSize="lg"
-            >
-              Time Left: {formatTime(timeLeft)}
-            </Badge>
-            <Progress 
-              value={((currentQuestionIndex + 1) / questions.length) * 100}
-              size="sm"
-              width="full"
-              colorScheme="purple"
-              borderRadius="full"
-            />
-          </Flex>
-          
-          <Box p={6} bg={useColorModeValue('gray.50', 'gray.800')} borderRadius="lg">
-            <Text fontSize="xl" fontWeight="medium">
-              {currentQuestion.question}
-            </Text>
-          </Box>
-
-          <RadioGroup
-            onChange={handleOptionSelect}
-            value={currentAnswer?.selectedOption || ''}
+      <>
+        <Box
+          position="sticky"
+          top="0"
+          zIndex="sticky"
+          bg={useColorModeValue('white', 'gray.800')}
+          borderBottom="1px"
+          borderColor={useColorModeValue('gray.100', 'gray.700')}
+          py={4}
+          px={8}
+          mb={6}
+          boxShadow="sm"
+        >
+          <Flex 
+            justify="space-between" 
+            align="center" 
+            maxW="container.md" 
+            mx="auto"
+            wrap="wrap"
+            gap={4}
           >
-            <VStack spacing={4} align="stretch">
-              {[
-                { key: 'A', value: currentQuestion.optionA },
-                { key: 'B', value: currentQuestion.optionB },
-                { key: 'C', value: currentQuestion.optionC },
-                { key: 'D', value: currentQuestion.optionD },
-              ].map((option) => (
-                <Radio
-                  key={option.key}
-                  value={option.key}
-                  size="lg"
-                  p={4}
-                  borderWidth={1}
-                  borderRadius="md"
-                  _hover={{ bg: useColorModeValue('gray.100', 'gray.600') }}
-                  colorScheme="purple"
-                >
-                  <Text fontSize="lg">{option.key}. {option.value}</Text>
-                </Radio>
-              ))}
-            </VStack>
-          </RadioGroup>
-
-          <HStack justify="space-between" pt={4}>
-            <Button
-              onClick={handlePrevious}
-              isDisabled={currentQuestionIndex === 0}
-              colorScheme="gray"
+            <Badge
               size="lg"
-              leftIcon={<Text>←</Text>}
-            >
-              Previous
-            </Button>
-            
-            <Button
-              onClick={handleNext}
+              px={4}
+              py={2}
+              borderRadius="full"
               colorScheme="purple"
-              size="lg"
-              rightIcon={<Text>→</Text>}
+              fontSize="md"
+              fontWeight="bold"
+              bgGradient={gradientBg}
+              color="white"
             >
-              {currentQuestionIndex === questions.length - 1 ? 'Review Answers' : 'Next'}
-            </Button>
-          </HStack>
-        </VStack>
-      </Box>
+              Role: {role || "FullStack (Web)"}
+            </Badge>
+            <HStack spacing={4}>
+              <Tooltip label="Time remaining" placement="bottom">
+                <Badge
+                  animation={timeLeft < 60 ? `${pulse} 2s infinite` : 'none'}
+                  colorScheme={timeLeft < 60 ? 'red' : 'green'}
+                  p={3}
+                  borderRadius="lg"
+                  fontSize="lg"
+                  display="flex"
+                  alignItems="center"
+                  gap={2}
+                >
+                  <TimeIcon />
+                  {formatTime(timeLeft)}
+                </Badge>
+              </Tooltip>
+              <Badge
+                colorScheme="blue"
+                p={3}
+                borderRadius="lg"
+                fontSize="lg"
+              >
+                {currentQuestionIndex + 1}/{questions.length}
+              </Badge>
+            </HStack>
+          </Flex>
+          <Progress
+            value={((currentQuestionIndex + 1) / questions.length) * 100}
+            size="sm"
+            colorScheme="purple"
+            borderRadius="full"
+            hasStripe
+            isAnimated
+            mt={4}
+          />
+        </Box>
+
+        <Box 
+          bg={useColorModeValue('white', 'gray.800')}
+          p={8}
+          borderRadius="2xl"
+          boxShadow="2xl"
+          border="1px"
+          borderColor={useColorModeValue('gray.100', 'gray.700')}
+          position="relative"
+          overflow="hidden"
+          _before={{
+            content: '""',
+            position: 'absolute',
+            top: '-2px',
+            left: '-2px',
+            right: '-2px',
+            height: '4px',
+            bgGradient: gradientBg,
+          }}
+        >
+          <VStack spacing={8} align="stretch">
+            <ScaleFade in={true} initialScale={0.9}>
+              <Heading 
+                size="lg" 
+                bgGradient={gradientBg}
+                bgClip="text"
+                letterSpacing="tight"
+              >
+                Question {currentQuestionIndex + 1}
+              </Heading>
+            </ScaleFade>
+
+            <Box 
+              p={8} 
+              bg={useColorModeValue('gray.50', 'gray.700')} 
+              borderRadius="xl"
+              boxShadow="inner"
+              position="relative"
+              _hover={{ transform: 'translateY(-2px)', transition: 'all 0.2s' }}
+            >
+              <Text 
+                fontSize="xl" 
+                fontWeight="medium"
+                lineHeight="tall"
+              >
+                {currentQuestion.question}
+              </Text>
+            </Box>
+
+            <RadioGroup
+              onChange={handleOptionSelect}
+              value={currentAnswer?.selectedOption || ''}
+            >
+              <VStack spacing={4} align="stretch">
+                {[
+                  { key: 'A', value: currentQuestion.optionA },
+                  { key: 'B', value: currentQuestion.optionB },
+                  { key: 'C', value: currentQuestion.optionC },
+                  { key: 'D', value: currentQuestion.optionD },
+                ].map((option) => (
+                  <Radio
+                    key={option.key}
+                    value={option.key}
+                    size="lg"
+                    p={6}
+                    borderWidth={2}
+                    borderRadius="lg"
+                    _hover={{
+                      bg: useColorModeValue('gray.50', 'gray.700'),
+                      transform: 'translateX(8px)',
+                      transition: 'all 0.2s',
+                    }}
+                    _checked={{
+                      bg: useColorModeValue('purple.50', 'purple.900'),
+                      borderColor: 'purple.500',
+                    }}
+                    colorScheme="purple"
+                  >
+                    <Text fontSize="lg" fontWeight="medium">
+                      {option.key}. {option.value}
+                    </Text>
+                  </Radio>
+                ))}
+              </VStack>
+            </RadioGroup>
+
+            <HStack justify="space-between" pt={6}>
+              <Button
+                onClick={handlePrevious}
+                isDisabled={currentQuestionIndex === 0}
+                size="lg"
+                variant="outline"
+                colorScheme="purple"
+                leftIcon={<Text>←</Text>}
+                _hover={{
+                  transform: 'translateX(-4px)',
+                  transition: 'all 0.2s',
+                }}
+              >
+                Previous
+              </Button>
+              
+              <Button
+                onClick={handleNext}
+                size="lg"
+                colorScheme="purple"
+                rightIcon={<Text>→</Text>}
+                bgGradient={gradientBg}
+                _hover={{
+                  transform: 'translateX(4px)',
+                  transition: 'all 0.2s',
+                }}
+              >
+                {currentQuestionIndex === questions.length - 1 ? 'Review Answers' : 'Next'}
+              </Button>
+            </HStack>
+          </VStack>
+        </Box>
+      </>
     );
   };
 
-  // Warning Banner Component
+  // Warning Banner Component with enhanced styling
   const WarningBanner = () => (
     <Box
       position="fixed"
@@ -716,18 +947,27 @@ const Quiz: React.FC = () => {
       bg="red.500"
       color="white"
       px={4}
-      py={3}
+      py={4}
       zIndex={9999}
       transform={showWarningBanner ? "translateY(0)" : "translateY(-100%)"}
       transition="transform 0.3s ease-in-out"
-      boxShadow="0 2px 4px rgba(0,0,0,0.2)"
+      boxShadow="lg"
     >
       <Container maxW="container.lg">
         <Flex align="center" justify="space-between">
-          <Text fontWeight="medium">{warningMessage}</Text>
-          <Text fontWeight="bold">
+          <HStack spacing={3}>
+            <WarningIcon w={5} h={5} />
+            <Text fontSize="lg" fontWeight="medium">{warningMessage}</Text>
+          </HStack>
+          <Badge
+            colorScheme="red"
+            variant="solid"
+            fontSize="md"
+            p={2}
+            borderRadius="md"
+          >
             Warning {warningCount}/{MAX_WARNINGS}
-          </Text>
+          </Badge>
         </Flex>
       </Container>
     </Box>
@@ -735,8 +975,11 @@ const Quiz: React.FC = () => {
 
   if (loading) {
     return (
-      <Container centerContent>
-        <Text mt={10}>Loading questions...</Text>
+      <Container centerContent py={20}>
+        <VStack spacing={6}>
+          <Progress size="xs" w="200px" isIndeterminate colorScheme="purple" />
+          <Text fontSize="lg">Loading questions...</Text>
+        </VStack>
       </Container>
     );
   }
