@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Box,
   VStack,
@@ -91,8 +91,6 @@ const Quiz: React.FC = () => {
   const [isDisqualificationSaved, setIsDisqualificationSaved] = useState(false);
   const [showWarningBanner, setShowWarningBanner] = useState(false);
   const [warningTimeout, setWarningTimeout] = useState<NodeJS.Timeout | null>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [cameraError, setCameraError] = useState<string | null>(null);
 
   // Timer functionality
   useEffect(() => {
@@ -728,117 +726,9 @@ const Quiz: React.FC = () => {
     </Box>
   );
 
-  // Simple and robust camera initialization
-  const initializeCamera = async () => {
-    try {
-      const constraints = {
-        video: {
-          width: 640,
-          height: 480,
-          facingMode: 'user'
-        }
-      };
-
-      const stream = await navigator.mediaDevices.getUserMedia(constraints);
-      
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-      }
-
-      setCameraError(null);
-    } catch (error) {
-      console.error('Camera initialization error:', error);
-      setCameraError('Failed to access camera');
-      toast({
-        title: 'Camera Error',
-        description: 'Unable to access camera. Please check permissions.',
-        status: 'error',
-        duration: 5000,
-        isClosable: true,
-      });
-    }
-  };
-
-  // Initialize camera on component mount
-  useEffect(() => {
-    initializeCamera();
-
-    // Cleanup function
-    return () => {
-      if (videoRef.current?.srcObject) {
-        const stream = videoRef.current.srcObject as MediaStream;
-        stream.getTracks().forEach(track => track.stop());
-      }
-    };
-  }, []);
-
-  // Handle video element errors
-  const handleVideoError = (error: any) => {
-    console.error('Video element error:', error);
-    setCameraError('Video playback error');
-    // Attempt to reinitialize camera
-    initializeCamera();
-  };
-
-  const WebcamFeed = () => (
-    <Box
-      position="fixed"
-      top="20px"
-      right="20px"
-      width="240px"
-      height="180px"
-      bg="black"
-      borderRadius="md"
-      overflow="hidden"
-      boxShadow="lg"
-      zIndex={1000}
-    >
-      <video
-        ref={videoRef}
-        autoPlay
-        playsInline
-        muted
-        onError={handleVideoError}
-        style={{
-          width: '100%',
-          height: '100%',
-          objectFit: 'cover',
-          transform: 'scaleX(-1)'
-        }}
-      />
-      {cameraError && (
-        <Flex
-          position="absolute"
-          top="0"
-          left="0"
-          right="0"
-          bottom="0"
-          bg="blackAlpha.700"
-          color="white"
-          alignItems="center"
-          justifyContent="center"
-          textAlign="center"
-          p={2}
-        >
-          <VStack spacing={2}>
-            <Text fontSize="sm">Camera Error</Text>
-            <Button
-              size="sm"
-              colorScheme="blue"
-              onClick={initializeCamera}
-            >
-              Retry Camera
-            </Button>
-          </VStack>
-        </Flex>
-      )}
-    </Box>
-  );
-
   if (loading) {
     return (
       <Container centerContent>
-        <WebcamFeed />
         <Text mt={10}>Loading questions...</Text>
       </Container>
     );
@@ -846,16 +736,13 @@ const Quiz: React.FC = () => {
 
   if (showReview) {
     return (
-      <>
-        <WebcamFeed />
-        <Container maxW="container.xl" py={10}>
-          <ThemeToggle />
-          <Box>
-            {renderReviewSection()}
-            <WarningModal />
-          </Box>
-        </Container>
-      </>
+      <Container maxW="container.xl" py={10}>
+        <ThemeToggle />
+        <Box>
+          {renderReviewSection()}
+          <WarningModal />
+        </Box>
+      </Container>
     );
   }
 
@@ -871,7 +758,6 @@ const Quiz: React.FC = () => {
   return (
     <>
       <WarningBanner />
-      <WebcamFeed />
       <Container maxW="container.md" py={10}>
         <ThemeToggle />
         <VStack spacing={6} align="stretch">
