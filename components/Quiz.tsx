@@ -781,30 +781,19 @@ const Quiz: React.FC = () => {
             wrap="wrap"
             gap={4}
           >
-            <VStack align="start" spacing={1}>
-              <Heading
-                size="md"
-                bgGradient={gradientBg}
-                bgClip="text"
-                letterSpacing="tight"
-                fontWeight="bold"
-              >
-                Intellecto
-              </Heading>
-              <Badge
-                size="lg"
-                px={4}
-                py={2}
-                borderRadius="full"
-                colorScheme="purple"
-                fontSize="md"
-                fontWeight="bold"
-                bgGradient={gradientBg}
-                color="white"
-              >
-                {role || "FullStack (Web)"} Assessment
-              </Badge>
-            </VStack>
+            <Badge
+              size="lg"
+              px={4}
+              py={2}
+              borderRadius="full"
+              colorScheme="purple"
+              fontSize="md"
+              fontWeight="bold"
+              bgGradient={gradientBg}
+              color="white"
+            >
+              {role || "FullStack (Web)"} Assessment
+            </Badge>
             <HStack spacing={4}>
               <Tooltip label="Time remaining" placement="bottom">
                 <Badge
