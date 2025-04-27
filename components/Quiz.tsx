@@ -69,6 +69,8 @@ const PASSING_PERCENTAGE = 0;
 const MAX_WARNINGS = 3;
 
 const Quiz: React.FC = () => {
+  const router = useRouter();
+  const { role } = router.query;
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Answer[]>([]);
@@ -77,7 +79,6 @@ const Quiz: React.FC = () => {
   const [showReview, setShowReview] = useState(false);
   const [timeLeft, setTimeLeft] = useState(TOTAL_TIME);
   const toast = useToast();
-  const router = useRouter();
   const { colorMode } = useColorMode();
   
   const bgColor = useColorModeValue('white', 'gray.700');
@@ -125,10 +126,15 @@ const Quiz: React.FC = () => {
   // Fetch and randomize questions
   const fetchQuestions = async () => {
     try {
-      const response = await fetch('https://jm-ebg-cdp.el.r.appspot.com/api/questions?role=FullStack%20(Web)');
+      // Use "FullStack (Web)" as default if no role is provided
+      const defaultRole = "FullStack (Web)";
+      const currentRole = role || defaultRole;
+      const encodedRole = encodeURIComponent(currentRole as string);
+      
+      const response = await fetch(`https://jm-ebg-cdp.el.r.appspot.com/api/questions?role=${encodedRole}`);
       const data = await response.json();
       
-      // Randomly select 15 questions
+      // Randomly select questions
       const shuffled = data.sort(() => 0.5 - Math.random());
       const selectedQuestions = shuffled.slice(0, MAX_QUESTIONS);
       
@@ -148,8 +154,9 @@ const Quiz: React.FC = () => {
   };
 
   useEffect(() => {
+    // Always fetch questions, even if role is not provided
     fetchQuestions();
-  }, []);
+  }, [role]); // Still keep role in dependencies to refetch if it changes
 
   const handleOptionSelect = (option: string) => {
     const currentQuestion = questions[currentQuestionIndex];
