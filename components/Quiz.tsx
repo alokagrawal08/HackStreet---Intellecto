@@ -384,7 +384,7 @@ const Quiz: React.FC = () => {
 
   const handleProceed = () => {
     // Simply redirect to interview platform
-    window.location.href = 'https://ai-interview-platform-2whg2og9v-lalit-shrotriyas-projects.vercel.app/';
+    window.location.href = 'https://ai-interview-platform-nine-omega.vercel.app/';
   };
 
   const handleSubmit = async () => {
